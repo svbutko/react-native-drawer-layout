@@ -148,11 +148,14 @@ export default class DrawerLayout extends Component {
 
         /* Drawer styles */
         let outputRange;
+        let mainViewPosition;
 
         if (this.getDrawerPosition() === 'left') {
             outputRange = [-drawerWidth, 0];
+            mainViewPosition = [0, drawerWidth];
         } else {
             outputRange = [drawerWidth, 0];
+            mainViewPosition = [0, -drawerWidth];
         }
 
         const drawerTranslateX = openValue.interpolate({
@@ -160,8 +163,16 @@ export default class DrawerLayout extends Component {
             outputRange,
             extrapolate: 'clamp',
         });
+        const mainViewTranslateX = openValue.interpolate({
+            inputRange: [0, 1],
+            outputRange: mainViewPosition,
+            extrapolate: 'clamp',
+        });
         const animatedDrawerStyles = {
             transform: [{ translateX: drawerTranslateX }],
+        };
+        const animatedMainStyles = {
+            transform: [{ translateX: mainViewTranslateX }],
         };
 
         /* Overlay styles */
@@ -178,7 +189,7 @@ export default class DrawerLayout extends Component {
                 style={{ flex: 1, backgroundColor: 'transparent' }}
                 {...this._panResponder.panHandlers}
             >
-                <Animated.View style={styles.main}>
+                <Animated.View style={[styles.main, animatedMainStyles]}>
                     {this.props.children}
                 </Animated.View>
                 <TouchableWithoutFeedback
